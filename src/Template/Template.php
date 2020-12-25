@@ -48,6 +48,23 @@ class Template extends AbstractAPI
      * 创建机构模板印章.
      *
      * @param string $orgId   机构id
+     * @param string $color   印章颜色
+     * @param string $type    模板类型
+     * @param string $central 中心图案类型
+     *
+     * @return Collection|null
+     *
+     * @throws HttpException
+     */
+    public function createOrganizationsTemplate($orgId, $color = 'RED', $type = 'TEMPLATE_ROUND', $central = 'STAR')
+    {
+        return $this->createOfficialTemplate($orgId,  '', $color,  159,  159, '', '', $type, $central);
+    }
+
+    /**
+     * 创建机构模板印章.
+     *
+     * @param string $orgId   机构id
      * @param string $alias   印章别名
      * @param string $color   印章颜色
      * @param int    $height  印章高度

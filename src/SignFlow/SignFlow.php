@@ -54,7 +54,7 @@ class SignFlow extends AbstractAPI
      *
      * @throws HttpException
      */
-    public function createSignFlow($businessScene, $noticeDeveloperUrl = null, $autoArchive = true)
+    public function createSignFlow($businessScene ="test", $noticeDeveloperUrl = null, $autoArchive = true)
     {
         $url = '/v1/signflows';
         $params = [
@@ -87,6 +87,43 @@ class SignFlow extends AbstractAPI
         $params = [
             'docs' => [
                 ['fileId' => $fileId, 'encryption' => $encryption, 'fileName' => $fileName, 'filePassword' => $filePassword],
+            ],
+        ];
+
+        return $this->parseJSON('json', [$url, $params]);
+    }
+
+
+    /**
+     * 添加平台自动盖章签署区.
+     *
+     * @param string $flowId           流程id
+     * @param string $fileId           文件file id
+     * @param string $accountId        签署操作人个人账号标识
+     * @param string $posPage          页码信息
+     * @param float  $posX             x坐标
+     * @param float  $posY             y坐标
+     * @param string $accountSealId    印章id
+     *
+     * @return Collection|null
+     *
+     * @throws HttpException
+     */
+    public function addAutoSign($flowId, $fileId, $accountId, $posPage, $posX, $posY, $accountSealId)
+    {
+        $url = "/v1/signflows/{$flowId}/signfields/autoSign";
+        $signFieldOne = [
+            'fileId' => $fileId,
+            'authorizedAccountId' => $accountId,
+            'posBean' => ['posPage' => $posPage, 'posX' => $posX, 'posY' => $posY],
+            'signDateBeanType' => 1,
+            'signDateBean' => ['fontSize' => 14],
+            'sealId' => $accountSealId
+        ];
+
+        $params = [
+            'signfields' => [
+                $signFieldOne,
             ],
         ];
 

@@ -21,17 +21,22 @@ class Account extends AbstractAPI
      *
      * @param string $thirdPartyUserId 用户唯一标识
      * @param string $name             姓名
-     * @param string $idType           证件类型, 默认: CRED_PSN_CH_IDCARD
      * @param string $idNumber         证件号
      * @param string $mobile           手机号码
      * @param string $email            邮箱地址
+     * @param string $idType           证件类型, 默认: CRED_PSN_CH_IDCARD
      *
      * @return Collection|null
      *
      * @throws HttpException
      */
-    public function createPersonalAccount($thirdPartyUserId, $name, $idType, $idNumber, $mobile = null, $email = null)
+    public function createPersonalAccount($thirdPartyUserId, $name,  $idNumber, $mobile = null, $email = null, $idType = "CRED_PSN_CH_IDCARD")
     {
+        try {
+            $this->deletePersonalAccountByThirdId($thirdPartyUserId);
+        } catch (\Exception $e) {
+        }
+
         $url = '/v1/accounts/createByThirdPartyUserId';
         $params = [
             'thirdPartyUserId' => $thirdPartyUserId,
@@ -194,17 +199,22 @@ class Account extends AbstractAPI
      * @param string $thirdPartyUserId string 第三方平台标识, 如: 统一信用代码
      * @param string $creatorAccountId string 创建者 accountId
      * @param string $name             string 机构名称
-     * @param string $idType           string 证件类型, 默认: CRED_ORG_USCC
      * @param string $idNumber         string 证件号
      * @param null   $orgLegalIdNumber string 企业法人证件号
      * @param null   $orgLegalName     string 企业法人名称
+     * @param string $idType           string 证件类型, 默认: CRED_ORG_USCC
      *
      * @return Collection|null
      *
      * @throws HttpException
      */
-    public function createOrganizeAccount($thirdPartyUserId, $creatorAccountId, $name, $idType, $idNumber, $orgLegalIdNumber = null, $orgLegalName = null)
+    public function createOrganizeAccount($thirdPartyUserId, $creatorAccountId, $name, $idNumber, $orgLegalIdNumber = "", $orgLegalName = "", $idType = 'CRED_ORG_USCC')
     {
+        try {
+            $this->deleteOrganizeAccountByThirdId($thirdPartyUserId);
+        } catch (\Exception $e) {
+        }
+
         $url = '/v1/organizations/createByThirdPartyUserId';
         $params = [
             'thirdPartyUserId' => $thirdPartyUserId,

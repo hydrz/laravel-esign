@@ -48,23 +48,23 @@ class File extends AbstractAPI
     /**
      * (模板方式)通过上传方式创建模板.
      *
+     * @param string $fileName    文件名称（必须带上文件扩展名，不然会导致后续发起流程校验过不去 示例：合同.pdf ）
      * @param string $contentMd5  先计算文件md5值，在对该md5值进行base64编码
      * @param string $contentType 目标文件的MIME类型，支持：（1）application/octet-stream（2）application/pdf
-     * @param string $fileName    文件名称（必须带上文件扩展名，不然会导致后续发起流程校验过不去 示例：合同.pdf ）
      * @param bool   $convert2Pdf 是否转换成pdf文档，默认false
      *
      * @return Collection|null
      *
      * @throws HttpException
      */
-    public function createByUploadUrl($contentMd5, $contentType, $fileName, $convert2Pdf)
+    public function createByUploadUrl($fileName, $contentMd5 = "", $contentType = "application/octet-stream",  $convert2Pdf = false)
     {
         $url = '/v1/docTemplates/createByUploadUrl';
         $params = [
+            'fileName' => $fileName,
             'contentMd5' => $contentMd5,
             'contentType' => $contentType,
             'convert2Pdf' => $convert2Pdf,
-            'fileName' => $fileName,
         ];
 
         return $this->parseJSON('json', [$url, $params]);

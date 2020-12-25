@@ -10,8 +10,7 @@
 
 namespace Nilsir\LaravelEsign\Core;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\FilesystemCache;
+use Psr\SimpleCache\CacheInterface as Cache;
 use Nilsir\LaravelEsign\Exceptions\HttpException;
 
 class AccessToken
@@ -49,11 +48,11 @@ class AccessToken
     public function getToken($forceRefresh = false)
     {
         $cacheKey = $this->getCacheKey();
-        $cached = $this->getCache()->fetch($cacheKey);
+        $cached = $this->getCache()->get($cacheKey);
 
         if ($forceRefresh || empty($cached)) {
             $token = $this->getTokenFromServer();
-            $this->getCache()->save($cacheKey, $token['data'][$this->tokenJsonKey], 60 * 100);
+            $this->getCache()->set($cacheKey, $token['data'][$this->tokenJsonKey], 60 * 100);
 
             return $token['data'][$this->tokenJsonKey];
         }
@@ -79,7 +78,7 @@ class AccessToken
         $token = $http->parseJSON($http->get(self::API_TOKEN_GET, $params));
 
         if (empty($token['data'][$this->tokenJsonKey])) {
-            throw new HttpException('Request AccessToken fail. response: '.json_encode($token, JSON_UNESCAPED_UNICODE));
+            throw new HttpException('Request AccessToken fail. response: ' . json_encode($token, JSON_UNESCAPED_UNICODE));
         }
 
         return $token;
@@ -97,7 +96,7 @@ class AccessToken
 
     protected function getCache()
     {
-        return $this->cache ?: $this->cache = new FilesystemCache(sys_get_temp_dir());
+        return $this->cache ?: $this->cache = app('cache.store');
     }
 
     public function getHttp()
@@ -129,7 +128,7 @@ class AccessToken
     protected function getCacheKey()
     {
         if (is_null($this->cacheKey)) {
-            return $this->prefix.$this->appId;
+            return $this->prefix . $this->appId;
         }
 
         return $this->cacheKey;

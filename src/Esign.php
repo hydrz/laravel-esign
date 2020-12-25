@@ -10,8 +10,7 @@
 
 namespace Nilsir\LaravelEsign;
 
-use Doctrine\Common\Cache\Cache as CacheInterface;
-use Doctrine\Common\Cache\FilesystemCache;
+use Psr\SimpleCache\CacheInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
@@ -75,7 +74,7 @@ class Esign extends Container
 
         $keys = ['app_id', 'secret', 'open_platform.app_id', 'open_platform.secret', 'mini_program.app_id', 'mini_program.secret'];
         foreach ($keys as $key) {
-            !$config->has($key) || $config[$key] = '***'.substr($config[$key], -5);
+            !$config->has($key) || $config[$key] = '***' . substr($config[$key], -5);
         }
 
         Log::debug('Current config:', $config->toArray());
@@ -129,7 +128,7 @@ class Esign extends Container
             $this['cache'] = $this['config']['cache'];
         } else {
             $this['cache'] = function () {
-                return new FilesystemCache(sys_get_temp_dir());
+                return app('cache.store');
             };
         }
 
@@ -157,11 +156,11 @@ class Esign extends Container
         } elseif ($logFile = $this['config']['log.file']) {
             try {
                 $logger->pushHandler(new StreamHandler(
-                        $logFile,
-                        $this['config']->get('log.level', Logger::WARNING),
-                        true,
-                        $this['config']->get('log.permission', null))
-                );
+                    $logFile,
+                    $this['config']->get('log.level', Logger::WARNING),
+                    true,
+                    $this['config']->get('log.permission', null)
+                ));
             } catch (\Exception $e) {
             }
         }
